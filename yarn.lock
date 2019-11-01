@@ -456,6 +456,11 @@
     lodash.unescape "4.0.1"
     semver "^6.3.0"
 
+"@vk-io/session@^0.0.0-alpha.2":
+  version "0.0.0-alpha.2"
+  resolved "https://registry.yarnpkg.com/@vk-io/session/-/session-0.0.0-alpha.2.tgz#3db76886f8473105c9f0d49c28d160aa88305d73"
+  integrity sha512-DeiisJY36rUp5OdDfaztrhxYR5ZQBMwkwYErWdlD00DTEf6duI0EFdTu+YJpNbfNqeaFBBhFCi08FDQWIXoOVA==
+
 abab@^2.0.0:
   version "2.0.2"
   resolved "https://registry.yarnpkg.com/abab/-/abab-2.0.2.tgz#a2fba1b122c69a85caa02d10f9270c7219709a9d"
