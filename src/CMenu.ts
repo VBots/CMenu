@@ -6,7 +6,7 @@ export default class CMenu {
     public name: string;
     public regex: RegExp;
     public handler: Function = (() => true);
-    public stickersType: IStickerStorage['types'] | IStickerStorage['ids'] | null;
+    public stickersType: IStickerStorage['types'] | IStickerStorage['ids'];
 
     public cmd: string;
 
@@ -54,8 +54,8 @@ export default class CMenu {
     /**
      * Match string `str`
      */
-    public match(str: string): RegExpMatchArray {
-        return str && str.match(this.regex);
+    public match(str: string): RegExpMatchArray | null {
+        return str.match(this.regex);
     }
 
     /**
@@ -97,7 +97,7 @@ export default class CMenu {
 
 export const cmdMenu = (menu: CMenu): string => menu.cmd;
 export const checkMenu = (menu: CMenu, context: MessageContext) => (
-	menu.isHere(context.text)
+	(context.text && menu.isHere(context.text))
 	|| context.state.command === cmdMenu(menu)
 	|| (context.hasAttachments('sticker') && menu.isSticker(context.getAttachments('sticker')[0].id) )
 );

@@ -14,8 +14,8 @@ export const CreateHearCMenu = (updates: VKUpdates): Function => {
 				(text: string | null, context: MessageContext): boolean => {
 					const passed = checkMenu(menu, context);
 
-					if (menu.isHere(text)) {
-						context.$match = menu.match(text);
+					if (menu.isHere(text!)) {
+						context.$match = menu.match(text!)!;
 					}
 
 					return passed;
@@ -27,8 +27,13 @@ export const CreateHearCMenu = (updates: VKUpdates): Function => {
 	};
 }
 
+export interface ICreateSetMenu {
+    getMenu: ((context: MessageContext, oneTime: boolean) => object);
+    // vk?: VK;
+    // cdpw?: CDPW;
+};
 
-export const CreateSetMenu = ({ getMenu/* , vk, cdpw */ }: { getMenu?: Function/* , vk?: VK, cdpw?: CDPW */ } = {}): Function => {
+export const CreateSetMenu = ({ getMenu/* , vk, cdpw */ }: ICreateSetMenu): Function => {
 
 	return async function setMenu(context: MessageContext, menu?: CMenu, message: string = "", oneTime: boolean = false, photo?: UploadSource | null): Promise<number> {
         // @ts-ignore
