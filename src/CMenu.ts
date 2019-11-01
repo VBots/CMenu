@@ -35,7 +35,7 @@ export default class CMenu {
         this.cmd = `!cmd_${lowerName}`;
 
         regex = (!regex || Array.isArray(regex) && !regex.length) ? new RegExp(`^(${lowerName}|\/${lowerName})$`, "i") : regex;
-        this.regex = (regex instanceof RegExp) ? regex : new RegExp(`^(${regex.join("|")}|\/${regex.join("\/|")})$`, "i");
+        this.regex = (regex instanceof RegExp) ? regex : new RegExp(`^(${regex.join('|')}|\/${regex.join(`|\/`)})$`, "i");
 
         this.handler = typeof handler === "function" ? handler : (() => true);
 
@@ -91,7 +91,7 @@ export default class CMenu {
      * Returns custom tag
      */
     public get [Symbol.toStringTag](): string {
-        return `Menu_'${this.name}'`;
+        return `Menu_${this.name}`;
     }
 }
 
