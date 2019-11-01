@@ -20,21 +20,22 @@ export default class CMenu {
 	 * ```ts
 	 * const MMenu = [
 	 * 	Start: new CMenu("Start", [ "start", "старт", "начать" ], null, ['start', 'go']),
-	 * 	Confirm_Yes: new CMenu("Confirm_Yes", ['y', 'yes', 'true', 'да'], "yes"),
+	 * 	Confirm_Yes: new CMenu("Confirm_Yes", ['y', 'yes', 'true', 'да'], null, "yes"),
 	 * ];
 	 * ```
      */
     constructor(
         name: string,
-        regex: RegExp | string[],
+        regex?: RegExp | string[],
         handler: Function | null = (() => true),
         stickersType: IStickerStorage['types'] | IStickerStorage['ids'] | string | number | null = null
     ) {
         this.name = name;
-        this.cmd = `!cmd_${name.toLocaleLowerCase()}`;
+        const lowerName = name.toLocaleLowerCase();
+        this.cmd = `!cmd_${lowerName}`;
 
-        regex = (Array.isArray(regex) && !regex.length) ? new RegExp(`^(${this.name.toLocaleLowerCase()})$`, "i") : regex;
-        this.regex = (regex instanceof RegExp) ? regex : new RegExp(`^(${regex.join("|")})$`, "i");
+        regex = (!regex || Array.isArray(regex) && !regex.length) ? new RegExp(`^(${lowerName}|\/${lowerName})$`, "i") : regex;
+        this.regex = (regex instanceof RegExp) ? regex : new RegExp(`^(${regex.join("|")}|\/${regex.join("\/|")})$`, "i");
 
         this.handler = typeof handler === "function" ? handler : (() => true);
 

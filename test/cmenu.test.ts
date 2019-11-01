@@ -23,6 +23,11 @@ describe('CMenuZ', (): void => {
             const context = createContext({ text: "help" });
             expect(checkMenu(menu, context)).toBe(true); 
         });
+       
+        it("simulate sms sending with slash", () => {
+            const context = createContext({ text: "/help" });
+            expect(checkMenu(menu, context)).toBe(true); 
+        });
 
         it("simulate click button", () => {
             const context = createContext({ text: "Help me pls", command: "!cmd_help" });
