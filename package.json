@@ -1,0 +1,27 @@
+{
+  "devDependencies": {
+    "@types/jest": "^24.0.21",
+    "@types/node": "^12.12.3",
+    "@types/tough-cookie": "^2.3.5",
+    "@types/ws": "^6.0.3",
+    "jest": "^24.9.0",
+    "ts-jest": "^24.1.0",
+    "tslint": "^5.20.0",
+    "typescript": "^3.6.4"
+  },
+  "name": "vbots-trynow",
+  "version": "0.0.1",
+  "main": "dist/index",
+  "author": "xTCry (Vladislav Kh)",
+  "license": "MIT",
+  "scripts": {
+    "build": "tsc && yarn run test && node ./dist/index.js",
+    "test": "yarn run test:jest",
+    "test22": "yarn run test:jest && yarn run test:eslint",
+    "test:jest": "jest --config jest.config.json --no-cache",
+    "test:eslint": "eslint --ext .ts,.js --ignore-path .gitignore src/**/*.{ts,js}"
+  },
+  "dependencies": {
+    "vk-io": "^4.0.0-rc.25"
+  }
+}
