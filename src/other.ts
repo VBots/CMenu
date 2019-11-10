@@ -28,14 +28,14 @@ export const CreateHearCMenu = (updates: VKUpdates): Function => {
 }
 
 export interface ICreateSetMenu {
-    getMenu: ((context: MessageContext, oneTime: boolean) => object);
+    getMenu: ((context: MessageContext, oneTime: boolean, menuID?: string | null, inLine?: boolean) => object);
     // vk?: VK;
     // cdpw?: CDPW;
 };
 
 export const CreateSetMenu = ({ getMenu/* , vk, cdpw */ }: ICreateSetMenu): Function => {
 
-	return async function setMenu(context: MessageContext, menu?: CMenu, message: string = "", oneTime: boolean = false, photo?: UploadSource | null): Promise<number> {
+	return async function setMenu(context: MessageContext, menu?: CMenu, message: string = "", oneTime: boolean = false, photo?: UploadSource | null, inLine: boolean = false): Promise<number> {
         // @ts-ignore
         const { session } = context;
 	
@@ -47,7 +47,7 @@ export const CreateSetMenu = ({ getMenu/* , vk, cdpw */ }: ICreateSetMenu): Func
 			try {
 				const params = {
 					message,
-					keyboard: getMenu(context, oneTime)
+					keyboard: getMenu(context, oneTime, null, inLine)
 				};
 
 				// await context[photo ? "sendPhotos" : "send"]((photo ? photo : payLoad), (photo ? payLoad : undefined));
