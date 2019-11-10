@@ -11,8 +11,8 @@
     "build": "yarn run rollup:build",
     "watch": "yarn run rollup:build -w",
     "rollup:build": "rollup -c rollup.config.ts",
-    "test_": "yarn run test:jest",
-    "test": "yarn run test:jest && yarn run test:eslint",
+    "test": "yarn run test:jest",
+    "test_": "yarn run test:jest && yarn run test:eslint",
     "test:jest": "jest --config jest.config.json --no-cache",
     "test:eslint": "eslint --ext .ts,.js --ignore-path .gitignore src/**/*.{ts,js}"
   },
@@ -40,5 +40,10 @@
     "ts-jest": "^24.1.0",
     "tslint": "^5.20.0",
     "typescript": "^3.6.4"
-  }
+  },
+  "repository": "git@github.com:VBots/CMenu.git",
+  "bugs": {
+    "url": "https://github.com/VBots/CMenu/issues"
+  },
+  "homepage": "https://github.com/VBots/CMenu#readme"
 }
