@@ -6,6 +6,8 @@
   "author": "xTCry (Vladislav Kh)",
   "license": "MIT",
   "scripts": {
+    "pubfix": "npm version patch && yarn run publish",
+    "publish": "yarn run prepare && npm publish --access public",
     "build_": "tsc && yarn run test && node ./dist/index.js",
     "prepare": "yarn run rollup:build && yarn run test",
     "build": "yarn run rollup:build",
