@@ -42,7 +42,7 @@ export default class CMenu {
         // @ts-ignore
         this.stickersType =
           stickersType &&
-          (Array.isArray(stickersType) ? stickersType : [stickersType]);
+          (Array.isArray(stickersType) ? stickersType : [stickersType]) || [];
     }
 
     /**
@@ -71,7 +71,7 @@ export default class CMenu {
 	 * @param id Sticker ID
 	 */
 	public isSticker(id: number): boolean {
-		let passed = stickersStorage.find((e: IStickerStorage) => {
+		let passed = this.stickersType && stickersStorage.find((e: IStickerStorage) => {
 			for(const typeName of this.stickersType) {
 				if(typeName == id) {
 					return true;
