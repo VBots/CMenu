@@ -3,12 +3,13 @@
   "description": "Menu system for the library vk-io",
   "version": "0.0.5",
   "main": "lib/index",
+  "module": "lib/index.mjs",
+  "types": "lib/index.d.ts",
   "author": "xTCry (Vladislav Kh)",
   "license": "MIT",
   "scripts": {
-    "pubfix": "npm version patch && yarn run publish",
-    "publish": "yarn run prepare && npm publish --access public",
-    "build_": "tsc && yarn run test && node ./dist/index.js",
+    "up": "npm version patch",
+    "pub_": "npm publish --access public",
     "prepare": "yarn run rollup:build && yarn run test",
     "build": "yarn run rollup:build",
     "watch": "yarn run rollup:build -w",
@@ -19,7 +20,7 @@
     "test:eslint": "eslint --ext .ts,.js --ignore-path .gitignore src/**/*.{ts,js}"
   },
   "dependencies": {
-    "vk-io": "^4.0.0-rc.25"
+    "vk-io": "^4.0.0-rc.30"
   },
   "devDependencies": {
     "@types/jest": "^24.0.21",
