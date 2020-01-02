@@ -1,7 +1,7 @@
 {
   "name": "@vbots/cmenu",
   "description": "Menu system for the library vk-io",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "main": "lib/index",
   "module": "lib/index.mjs",
   "types": "lib/index.d.ts",
