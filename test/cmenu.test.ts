@@ -1,18 +1,26 @@
-import { CMenu, checkMenu, MessageContext } from "../src";
-import { AttachmentTypeString } from "vk-io";
+import { CMenu, checkMenu } from '../src';
+import { AttachmentTypeString, MessageContext } from 'vk-io';
 
 // @ts-ignore
-const createContext = ({ text = "", command = "", sticker = "" }: { text?: string = "", command?: string = "test", sticker?: number = 0 } = {}): MessageContext => ({
+const createContext = ({
+    text,
+    command,
+    sticker,
+}: {
+    text?: string;
+    command?: string;
+    sticker?: number;
+} = {}): MessageContext => ({
     text,
     state: {
-        command
+        command,
     },
     hasAttachments(e: AttachmentTypeString = 'sticker'): boolean {
-        return Boolean(sticker > 0);
+        return Boolean(sticker && sticker > 0);
     },
     // @ts-ignore
     getAttachments(e: string = 'sticker'): [{ id: number }] {
-        return [{ id: sticker }];
+        return !sticker ? [{ id: 0 }] : [{ id: sticker }];
     },
 });
 

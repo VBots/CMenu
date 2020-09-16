@@ -1,10 +1,5 @@
-import CMenu, { cmdMenu, checkMenu } from './CMenu';
-
-export default CMenu;
-
-export * from './stickersStorage';
+export * from './cmenu-manager';
+export * from './cmenu';
 export * from './types';
 export * from './other';
-
-export { CMenu, cmdMenu, checkMenu };
-
+export * from './catcher-kit-storage';

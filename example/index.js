@@ -1,142 +1,161 @@
 const { VK, Keyboard } = require('vk-io');
+const { HearManager } = require('@vk-io/hear');
 const { SessionManager } = require('@vk-io/session');
-const { CMenu, cmdMenu, CreateHearCMenu, CreateSetMenu } = require("..");
+const { cmdMenu, CMenu, CMenuManager, ICustomContext } = require('../../VBots/CMenu/lib');
 
-const vk = new VK();
-const { updates } = vk;
+require('dotenv').config();
 
-vk.token = '__YOUR_TOKEN__';
+const vk = new VK({
+    token: process.env.TOKEN,
+});
 
-const sessionManager = new SessionManager();
-
-const MMenu = {
-    /** Скрыть клавиатуру */
-	Close: new CMenu("Close"),
+let MMenu = {
     /** Не изменять лавиатуру */
-    None: new CMenu("None"),
-    
-	Start: new CMenu("Start", [ "start", "старт", "начать" ], null, "start"),
+    None: new CMenu('None'),
+    /** Скрыть клавиатуру */
+    Close: new CMenu('Close'),
 
-    Help: new CMenu("Help", [ "help", "помощь" ], null, 'help'),
-    
-	ResetMe: new CMenu("ResetMe", [ "resetme", "rsme" ]),
+    Start: new CMenu('Start', null, null, ['start', 'go']),
+
+    MainMenu: new CMenu('MainMenu', ['главное меню', 'main menu', 'menu', 'меню']),
+    About: new CMenu('About', ['что это', 'о боте']),
+    ResetMe: new CMenu('ResetMe', ['resetme', 'rsme']),
+
+    CallbackMe: new CMenu('CallbackMe'),
 };
 
-const hearCMenu = CreateHearCMenu(updates);
-const setMenu = CreateSetMenu({ vk, getMenu });
+function menuConstruct(context, menuID = cmdMenu(MMenu.None), { isOneTime = false, isInline = false }) {
+    if (menuID === cmdMenu(MMenu.None)) {
+        return undefined;
+    }
 
+    if (menuID === cmdMenu(MMenu.Close)) {
+        return Keyboard.keyboard([]).oneTime();
+    }
+    const isMenu = (e) => menuID == cmdMenu(e);
 
-function getMenu(context, oneTime, menuID) {
-    return menuConstruct(context, (menuID || context.session.menuState || cmdMenu(MMenu.None)), oneTime);
-}
-// Пример с генерацией клавиатуры взят из старого проекта. Обновлю позже
-function menuConstruct(context, menuID = cmdMenu(MMenu.Start), oneTime = false) {
-	if(menuID == cmdMenu(MMenu.None)) {
-		return undefined;
-	}
+    menuID = menuID || cmdMenu(MMenu.MainMenu);
 
-	if(menuID == cmdMenu(MMenu.Close)) {
-		const KB = Keyboard.keyboard([]);
-		KB.oneTime = true;
-		return KB;
-	}
+    let menuArr = [];
 
-	// const { session: { player } } = context;
-
-	let menuArr = [];
-
-	if(menuID == cmdMenu(MMenu.Start)) {
-        menuArr.push(
+    if (isMenu(MMenu.Start) || isMenu(MMenu.MainMenu)) {
+        menuArr.push([
             Keyboard.textButton({
-                label: 'Reset',
+                label: 'О боте',
                 payload: {
-                    command: cmdMenu(MMenu.ResetMe),
+                    command: cmdMenu(MMenu.About),
                 },
-                color: Keyboard.NEGATIVE_COLOR
+                color: Keyboard.SECONDARY_COLOR,
             }),
-        );
-		
-		menuArr.push(
-			Keyboard.textButton({
-				label: 'Помощь',
-				payload: {
-					command: cmdMenu(MMenu.Help),
-				},
-				color: Keyboard.SECONDARY_COLOR
-			}),
-		);
-	}
-	// else if(menuID == cmdMenu(MMenu.TMPL_Cancel)) {
-	// 	menuArr.push(Keyboard.textButton({
-	// 		label: 'Отмена',
-	// 		payload: {
-	// 			command: cmdMenu(MMenu.Confirm_Cancel),
-	// 		},
-	// 		color: Keyboard.SECONDARY_COLOR
-	// 	}));
-    // }
-    // ...
+            Keyboard.callbackButton({
+                label: 'Callback me',
+                color: Keyboard.PRIMARY_COLOR,
+                payload: {
+                    command: cmdMenu(MMenu.CallbackMe),
+                },
+            }),
+        ]);
+    }
 
-	const KB = Keyboard.keyboard(menuArr);
-	KB.oneTime = oneTime;
-	return KB;
+    return Keyboard.keyboard(menuArr).inline(isInline).oneTime(isOneTime);
 }
 
+const sessionManager = new SessionManager();
+const hearManager = new HearManager();
+const MenuMan = new CMenuManager(menuConstruct, hearManager);
 
 function setDefaultSessionMiddleware() {
-	return async (context, next) => {
-		const { session } = context;
+    return async (context, next) => {
+        const { session } = context;
 
-		if (!('menuState' in session)) {
-			session.menuState = cmdMenu(MMenu.None);
-		}
-
-		await next();
-	}
-}
-
-function setHears() {
-
-	hearCMenu(MMenu.Start, async (context, next) => {
-		setMenu(context, MMenu.Start, "Start PAGE");
-		await next();
-    });
-    
-	hearCMenu(MMenu.Help, async (context) => {
-        await context.send("Ahmm... Use start", {
-            keyboard: getMenu(context, true, cmdMenu(MMenu.Close)),
-            attachment: [ "doc191039467_523329920" ]
-        });
-    });
-    
-	hearCMenu(MMenu.ResetMe, async (context) => {
-		context.session = {};
-		setMenu(context, MMenu.None, "Reset user.");
-    });
-    
-}
-
-(async function run() {
-    // Skip outbox message and handle errors
-    updates.use(async (context, next) => {
-        if (context.is('message') && context.isOutbox) {
-            return;
+        if (!('menuState' in session)) {
+            session.menuState = cmdMenu(MMenu.None);
         }
 
-        try {
-            await next();
-        } catch (error) {
-            console.error('Error:', error);
-        }
-    })
-	// Init memoryStore player
-	.on('message', sessionManager.middleware)
-	// Set default session
-	.on('message', setDefaultSessionMiddleware());
-    
-    setHears();
+        await next();
+    }
+}
 
+// Skip outbox message and handle errors
+vk.updates.use(async (context, next) => {
+    if (context.is('message') && context.isOutbox) {
+        return;
+    }
 
-    await vk.updates.start();
-    console.log('Polling started');
-})();
+    try {
+        await next();
+    } catch (error) {
+        console.error('Error:', error);
+    }
+});
+// Init memoryStore player
+vk.updates.on('message', sessionManager.middleware);
+// Set default session
+vk.updates.on('message', setDefaultSessionMiddleware());
+vk.updates.on('message_new', MenuMan.middleware);
+vk.updates.on('message_new', hearManager.middleware);
+
+MenuMan.hear(MMenu.Start, async (context) => {
+    context.sendCM(MMenu.MainMenu, {}, 'Main menu');
+});
+
+MenuMan.hear(MMenu.About, async (context) => {
+    context.send('About me..');
+});
+
+MenuMan.hear(MMenu.CallbackMe, (context) => {
+    context.send('Это работает с телефона');
+});
+
+MenuMan.hear(MMenu.Help, async (context) => {
+    context.send('Ahmm... Use start', {
+        keyboard: menuConstruct(context, cmdMenu(MMenu.Close)),
+        attachment: ['doc191039467_523329920']
+    });
+});
+
+MenuMan.hear(MMenu.ResetMe, async (context) => {
+    context.session = {};
+    context.sendCM(MMenu.None, {}, 'Reset user.');
+});
+
+// Не будет вызвано, т.к. используется `hearManager` и он передан в `CMenuManager`
+MenuMan.onFallback(async (context) => {
+    context.sendCM(MMenu.Start, {}, 'no menu');
+});
+
+hearManager.hear(/^qq$/i, async (context) => {
+    context.sendCM(MMenu.Start, {}, 'HelloW');
+});
+
+hearManager.onFallback(async (context) => {
+    context.sendCM(MMenu.Start, {}, '?what');
+});
+
+vk.updates.on('message_event', async (context) => {
+    let result = null;
+    console.log(context);
+
+    switch (context.eventPayload.command) {
+        case cmdMenu(MMenu.CallbackMe):
+            result = await context.answer({
+                type: 'show_snackbar',
+                text: 'Qqq',
+            });
+            break;
+
+        default:
+            result = await context.answer({
+                type: 'show_snackbar',
+                text: '🤔 Zzh...',
+            });
+            break;
+    }
+
+    console.log(result);
+});
+
+vk.updates
+    .start()
+    .then(() => console.log('Started'))
+    .catch(console.error);

@@ -1,11 +1,11 @@
 {
   "name": "@vbots/cmenu",
-  "description": "Menu system for the library vk-io",
-  "version": "0.0.6",
+  "description": "Custom Menu system for the library vk-io",
+  "version": "1.0.0",
   "main": "lib/index",
   "module": "lib/index.mjs",
   "types": "lib/index.d.ts",
-  "author": "xTCry (Vladislav Kh)",
+  "author": "xTCry [Vladislav Kh] (https://github.com/xTCry/)",
   "license": "MIT",
   "scripts": {
     "up": "npm version patch",
@@ -20,17 +20,19 @@
     "test:eslint": "eslint --ext .ts,.js --ignore-path .gitignore src/**/*.{ts,js}"
   },
   "dependencies": {
-    "vk-io": "^4.0.0-rc.30"
+    "@vk-io/hear": "^1.0.2",
+    "middleware-io": "^2.5.0",
+    "vk-io": "^4.0.2"
+  },
+  "peerDependencies": {
+    "vk-io": "^4.0.1"
   },
   "devDependencies": {
     "@types/jest": "^24.0.21",
-    "@types/node": "^12.12.3",
+    "@types/node": "^14.10.1",
     "@types/rollup-plugin-json": "^3.0.2",
-    "@types/tough-cookie": "^2.3.5",
-    "@types/ws": "^6.0.3",
     "@typescript-eslint/eslint-plugin": "^2.6.0",
     "@typescript-eslint/parser": "^2.6.0",
-    "@vk-io/session": "^0.0.0-alpha.2",
     "eslint": "^6.6.0",
     "eslint-config-airbnb-base": "^14.0.0",
     "eslint-plugin-import": "^2.18.2",

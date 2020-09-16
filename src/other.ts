@@ -1,76 +1,103 @@
-import { MessageContext, VKUpdates, UploadSource } from './types';
-import CMenu, { checkMenu, cmdMenu } from './CMenu';
-// import VK from 'vk-io/lib/vk';
+import {
+    IMessageContextSendOptions,
+    IUploadSourceMedia,
+    MessageContext,
+} from 'vk-io';
+import { CMenu, checkMenu, cmdMenu } from './cmenu';
+import { CMenuManager } from './cmenu-manager';
+import { AllowArray, ICustomContext, IKeyboardGeneratorOptions } from './types';
 
+// Modificators
 
-export const CreateHearCMenu = (updates: VKUpdates): Function => {
-    return (menu: CMenu, handle: Function) => {
-        if (!(menu instanceof CMenu)) {
-            throw "[Wrong CMenu] " + menu;
+export const ModifiyContext = <C extends MessageContext>(
+    manager: CMenuManager<C>,
+    context: C & ICustomContext
+) => {
+    const Keyboard2Params = Keyboard2ParamsBuilder(manager, context);
+    const menuSet = (menu: CMenu) => {
+        if (menu && context.session) {
+            context.session.menuState = cmdMenu(menu);
         }
-
-        updates.hear(
-            [
-                (text: string | null, context: MessageContext): boolean => {
-                    const passed = checkMenu(menu, context);
-
-                    if (text && menu.isHere(context)) {
-                        context.$match = menu.match(text!)!;
-                    }
-
-                    return passed;
-                }
-            ],
-            // @ts-ignore
-            handle
-        );
     };
-}
 
-export interface ICreateSetMenu {
-    getMenu: ((context: MessageContext, oneTime: boolean, menuID?: string | null, inLine?: boolean) => object);
-    // vk?: VK;
-    // cdpw?: CDPW;
+    context.checkMenu = (menu: CMenu) => checkMenu(menu, context);
+
+    context.sendCM = async (
+        menu: CMenu,
+        menuParams: IKeyboardGeneratorOptions = {},
+        text: string | IMessageContextSendOptions,
+        params?: IMessageContextSendOptions
+    ) => (
+        menuSet(menu),
+        await context.send(
+            text,
+            Keyboard2Params<IMessageContextSendOptions>(params, menuParams)
+        )
+    );
+
+    context.replyCM = async (
+        menu: CMenu,
+        menuParams: IKeyboardGeneratorOptions = {},
+		text: string | IMessageContextSendOptions,
+		params?: IMessageContextSendOptions
+    ) => (
+        menuSet(menu),
+        await context.reply(
+            text,
+            Keyboard2Params<IMessageContextSendOptions>(params, menuParams)
+        )
+    );
+
+    context.sendPhotosCM = async (
+        menu: CMenu,
+        menuParams: IKeyboardGeneratorOptions = {},
+        rawSources: AllowArray<IUploadSourceMedia>,
+        params: IMessageContextSendOptions = {}
+    ) => (
+        menuSet(menu),
+        await context.sendPhotos(
+            rawSources,
+            Keyboard2Params<IMessageContextSendOptions>(params, menuParams)
+        )
+    );
+
+    context.sendDocumentsCM = async (
+        menu: CMenu,
+        menuParams: IKeyboardGeneratorOptions = {},
+        rawSources: AllowArray<IUploadSourceMedia>,
+        params: IMessageContextSendOptions = {}
+    ) => (
+        menuSet(menu),
+        await context.sendDocuments(
+            rawSources,
+            Keyboard2Params<IMessageContextSendOptions>(params, menuParams)
+        )
+    );
+
+    context.sendAudioMessageCM = async (
+        menu: CMenu,
+        menuParams: IKeyboardGeneratorOptions = {},
+        source: IUploadSourceMedia,
+        params: IMessageContextSendOptions = {}
+    ) => (
+        menuSet(menu),
+        await context.sendAudioMessage(
+            source,
+            Keyboard2Params<IMessageContextSendOptions>(params, menuParams)
+        )
+    );
 };
 
-export const CreateSetMenu = ({ getMenu/* , vk, cdpw */ }: ICreateSetMenu): Function => {
-
-    return async function setMenu(context: MessageContext, menu?: CMenu, message: string = "", oneTime: boolean = false, photo?: UploadSource | null, inLine: boolean = false): Promise<number> {
-        // @ts-ignore
-        const { session } = context;
-    
-        if (menu) {
-            session.menuState = cmdMenu(menu);
-        }
-
-        if (message) {
-            try {
-                const params = {
-                    message,
-                    keyboard: getMenu(context, oneTime, null, inLine)
-                };
-
-                // await context[photo ? "sendPhotos" : "send"]((photo ? photo : payLoad), (photo ? payLoad : undefined));
-                if (photo) {
-                    return await context.sendPhotos(photo, params);
-                }
-                else {
-                    return await context.send(params);
-                }
-            } catch (e) {
-                // Code №121 - Invalid hash
-                if (e.message && e.message.indexOf("Invalid hash") !== -1) {
-                    // Попытка повторно отправить сообщение без фото
-                    if (photo) {
-                        setMenu(context, menu, message, oneTime);
-                    }
-                }
-                else {
-                    throw e;
-                }
-            }
-        }
-
-        return 0;
+const Keyboard2ParamsBuilder = <C extends MessageContext>(
+    manager: CMenuManager<C>,
+    context: C & ICustomContext
+) => <P>(
+    params?: P,
+    menuParams: IKeyboardGeneratorOptions = {
+        isOneTime: false,
+        isInline: false,
     }
-}
+) => ({
+    keyboard: manager.menuGenerator(context, null, menuParams),
+    ...params
+}) as P;

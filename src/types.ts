@@ -1,37 +1,82 @@
-import { UploadSource } from "vk-io/lib/upload/upload";
-// import Updates from "vk-io/lib/updates/updates";
-import { MessageContext } from "vk-io";
-
-export {
+import {
+    Context,
+    IMessageContextSendOptions,
+    IUploadSourceMedia,
+    KeyboardBuilder,
     MessageContext,
-    UploadSource
+} from 'vk-io';
+import { CMenu } from './';
+
+export type AllowArray<T> = T | T[];
+
+export interface HandlerFunction {
+    (context: Context): boolean;
 }
 
-// Whoops
-declare type Middleware<T> = (context: T, next: (() => Promise<any>)) => any;
-declare type HearFunctionCondition<T, U> = (value: T, context: U) => boolean;
-declare type HearCondition<T, U> = HearFunctionCondition<T, U> | RegExp | string;
-declare type HearObjectCondition<T extends Record<string, any>> = {
-    [P in keyof T]: HearCondition<T[P], T> | HearCondition<T[P], T>[];
+export interface ICatcherKitStorage {
+    /**
+     * Набор типов
+     */
+    types: string[];
+    /**
+     * Набор ID триггерных стикеров
+     */
+    stickers: number[];
+    /**
+     * Триггерные слова
+     */
+    words: string[];
 };
-export interface VKUpdates {
-  hear<T = {}>(
-    hearConditions:
-      | (
-          | HearCondition<string | null, T & MessageContext>[]
-          | HearCondition<string | null, T & MessageContext>)
-      | (
-          | HearObjectCondition<T & MessageContext>
-          | HearObjectCondition<T & MessageContext>[]),
-    handler: Middleware<MessageContext & T>
-  ): this;
+
+export type ICatcherKitType =
+    | ICatcherKitStorage['types']
+    | ICatcherKitStorage['stickers']
+    | string
+    | number;
+
+
+export interface ICustomContext {
+    checkMenu: (menu: CMenu, context: Context) => boolean;
+
+    sendCM: (
+        menu: CMenu,
+        menuParams: IKeyboardGeneratorOptions,
+        text: string | IMessageContextSendOptions,
+        params?: IMessageContextSendOptions
+    ) => Promise<MessageContext>;
+
+    replyCM: (
+        menu: CMenu,
+        menuParams: IKeyboardGeneratorOptions,
+        text: string | IMessageContextSendOptions,
+        params?: IMessageContextSendOptions
+    ) => Promise<MessageContext>;
+
+    sendPhotosCM: (
+        menu: CMenu,
+        menuParams: IKeyboardGeneratorOptions,
+        rawSources: AllowArray<IUploadSourceMedia>,
+        params: IMessageContextSendOptions
+    ) => Promise<MessageContext>;
+
+    sendDocumentsCM: (
+        menu: CMenu,
+        menuParams: IKeyboardGeneratorOptions,
+        rawSources: AllowArray<IUploadSourceMedia>,
+        params: IMessageContextSendOptions
+    ) => Promise<MessageContext>;
+
+    sendAudioMessageCM: (
+        menu: CMenu,
+        menuParams: IKeyboardGeneratorOptions,
+        source: IUploadSourceMedia,
+        params: IMessageContextSendOptions
+    ) => Promise<MessageContext>;
 }
 
-// export interface IContext extends MessageContext {
-// 	state: {
-//         command: string;
-//     };
+export type IKeyboardGenerator = (context: MessageContext, menuID?: CMenu['cmd'] | null, menuParams?: IKeyboardGeneratorOptions) => KeyboardBuilder;
 
-// 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-// 	[key: string]: any;
-// }
+export interface IKeyboardGeneratorOptions {
+    isOneTime?: boolean;
+    isInline?: boolean
+};
