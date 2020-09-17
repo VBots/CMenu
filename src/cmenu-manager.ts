@@ -56,7 +56,11 @@ export class CMenuManager<C extends MessageContext> {
             throw new Error('Condition should be not empty');
         }
 
-        const hasConditions2 = rawConditions.every((r) => r instanceof CMenu);
+        const hasConditions2 = rawConditions.every(
+            (r) =>
+                (r.constructor && r.constructor.name === 'CMenu') ||
+                r instanceof CMenu
+        );
 
         if (!hasConditions2) {
             throw new TypeError('Condition should be CMenu');

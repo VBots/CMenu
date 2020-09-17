@@ -38,8 +38,8 @@ export const ModifiyContext = <C extends MessageContext>(
     context.replyCM = async (
         menu: CMenu,
         menuParams: IKeyboardGeneratorOptions = {},
-		text: string | IMessageContextSendOptions,
-		params?: IMessageContextSendOptions
+        text: string | IMessageContextSendOptions,
+        params?: IMessageContextSendOptions
     ) => (
         menuSet(menu),
         await context.reply(

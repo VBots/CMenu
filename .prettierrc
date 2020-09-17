@@ -16,5 +16,6 @@
     "vueIndentScriptAndStyle": false,
     "parser": "typescript",
     "rangeEnd": 366,
-    "rangeStart": 0
+    "rangeStart": 0,
+    "endOfLine": "crlf"
 }
