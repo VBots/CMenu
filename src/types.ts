@@ -9,9 +9,7 @@ import { CMenu } from './';
 
 export type AllowArray<T> = T | T[];
 
-export interface HandlerFunction {
-    (context: Context): boolean;
-}
+export type HandlerFunction = (context: Context | any) => boolean;
 
 export interface ICatcherKitStorage {
     /**
@@ -23,9 +21,9 @@ export interface ICatcherKitStorage {
      */
     stickers: number[];
     /**
-     * Триггерные слова
+     * Триггерные фразы
      */
-    words: string[];
+    phrases: string[];
 };
 
 export type ICatcherKitType =
@@ -74,7 +72,7 @@ export interface ICustomContext {
     ) => Promise<MessageContext>;
 }
 
-export type IKeyboardGenerator = (context: MessageContext, menuID?: CMenu['cmd'] | null, menuParams?: IKeyboardGeneratorOptions) => KeyboardBuilder;
+export type IKeyboardGenerator = (context: MessageContext, menuID?: CMenu['cmd'] | null, menuParams?: IKeyboardGeneratorOptions) => KeyboardBuilder | undefined;
 
 export interface IKeyboardGeneratorOptions {
     isOneTime?: boolean;
