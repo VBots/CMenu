@@ -1,12 +1,7 @@
-/* eslint-disable import/no-extraneous-dependencies */
 import jsonPlugin from 'rollup-plugin-json';
-import commonjsPlugin from 'rollup-plugin-commonjs';
 import typescriptPlugin from 'rollup-plugin-typescript2';
-import nodeResolvePlugin from 'rollup-plugin-node-resolve';
-/* eslint-enable import/no-extraneous-dependencies */
 
 import { tmpdir } from 'os';
-// @ts-ignore
 import { builtinModules } from 'module';
 import { join as pathJoin } from 'path';
 
@@ -23,13 +18,10 @@ export default async function () {
     return {
         input: pathJoin('src', 'index.ts'),
         plugins: [
-            nodeResolvePlugin(),
-            commonjsPlugin(),
             jsonPlugin(),
             typescriptPlugin({
                 cacheRoot,
 
-                rollupCommonJSResolveHack: true,
                 useTsconfigDeclarationDir: false,
 
                 tsconfigOverride: {
@@ -41,6 +33,7 @@ export default async function () {
         ],
         external: [
             ...Object.keys(modulePkg.dependencies || {}),
+            ...Object.keys(modulePkg.peerDependencies || {}),
             ...coreModules
         ],
         output: [
@@ -48,10 +41,6 @@ export default async function () {
                 file: pathJoin(__dirname, `${modulePkg.main}.js`),
                 format: 'cjs',
                 exports: 'named'
-            },
-            {
-                file: pathJoin(__dirname, `${modulePkg.main}.mjs`),
-                format: 'esm'
             }
         ]
     };

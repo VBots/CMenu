@@ -1,17 +1,21 @@
 {
-    "compilerOptions": {
-        "module": "ESNext",
-        "target": "ES2019",
-		"strict": true,
-		"noEmit": true,
-		"declaration": true,
-        "esModuleInterop": true,
-        "noImplicitAny": true,
-        "moduleResolution": "Node",
-        "sourceMap": true,
-        "outDir": "lib"
-    },
-    "include": [
-        "./src/"
+  "compilerOptions": {
+    "module": "ESNext",
+    "target": "ES2019",
+    "strict": true,
+    "noEmit": true,
+    "declaration": true,
+    "esModuleInterop": true,
+    "noImplicitAny": true,
+    "moduleResolution": "Node",
+    "sourceMap": true,
+    "outDir": "lib",
+    "types": [
+      "node",
+      "jest"
     ]
+  },
+  "include": [
+    "./src/"
+  ]
 }

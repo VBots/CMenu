@@ -100,4 +100,4 @@ const Keyboard2ParamsBuilder = <C extends MessageContext>(
 ) => ({
     keyboard: manager.menuGenerator(context, null, menuParams),
     ...params
-}) as P;
+}) as unknown as P;
