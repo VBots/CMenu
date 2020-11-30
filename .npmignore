@@ -10,3 +10,4 @@ tsconfig.json
 rollup.config.ts
 jest.config.json
 .eslintrc.js
+.prettierrc

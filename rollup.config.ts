@@ -5,12 +5,9 @@ import { tmpdir } from 'os';
 import { builtinModules } from 'module';
 import { join as pathJoin } from 'path';
 
-const coreModules = builtinModules.filter(name => (
-	!/(^_|\/)/.test(name)
-));
+const coreModules = builtinModules.filter((name) => !/(^_|\/)/.test(name));
 
 const cacheRoot = pathJoin(tmpdir(), '.rpt2_cache');
-
 
 export default async function () {
     const modulePkg = await import(pathJoin(__dirname, 'package.json'));
@@ -27,21 +24,21 @@ export default async function () {
                 tsconfigOverride: {
                     outDir: 'lib',
                     rootDir: 'src',
-                    include: ['src']
-                }
-            })
+                    include: ['src'],
+                },
+            }),
         ],
         external: [
             ...Object.keys(modulePkg.dependencies || {}),
             ...Object.keys(modulePkg.peerDependencies || {}),
-            ...coreModules
+            ...coreModules,
         ],
         output: [
             {
                 file: pathJoin(__dirname, `${modulePkg.main}.js`),
                 format: 'cjs',
-                exports: 'named'
-            }
-        ]
+                exports: 'named',
+            },
+        ],
     };
 }
